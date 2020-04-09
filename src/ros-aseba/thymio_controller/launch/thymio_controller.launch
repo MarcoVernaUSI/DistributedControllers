@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<launch> 
+
+  <node ns="aseba/thymio1" pkg="thymio_controller" name="controller" type="thymio_controller_node.py" output="screen">
+  </node>
+  <param name="aseba/thymio1/net" value="$(find thymio_controller)/nodes/models/Distributed"/>
+  <param name="aseba/thymio1/c_net" value="$(find thymio_controller)/nodes/models/Communication"/>
+  <param name="aseba/thymio1/l_net" value="$(find thymio_controller)/nodes/models/LCommunication"/>
+
+
+  <node ns="aseba/thymio2" pkg="thymio_controller" name="controller" type="thymio_controller_node.py" output="screen">
+  </node>
+  <param name="aseba/thymio2/net" value="$(find thymio_controller)/nodes/models/Distributed"/>
+  <param name="aseba/thymio2/c_net" value="$(find thymio_controller)/nodes/models/Communication"/>
+  <param name="aseba/thymio2/l_net" value="$(find thymio_controller)/nodes/models/LCommunication"/>
+
+
+  <node ns="aseba/thymio3" pkg="thymio_controller" name="controller" type="thymio_controller_node.py" output="screen">
+  </node>
+  <param name="aseba/thymio3/net" value="$(find thymio_controller)/nodes/models/Distributed"/>
+  <param name="aseba/thymio3/c_net" value="$(find thymio_controller)/nodes/models/Communication"/>
+  <param name="aseba/thymio3/l_net" value="$(find thymio_controller)/nodes/models/LCommunication"/>
+
+
+  <node ns="aseba/thymio4" pkg="thymio_controller" name="controller" type="thymio_controller_node.py" output="screen">
+  </node>
+  <param name="aseba/thymio4/net" value="$(find thymio_controller)/nodes/models/Distributed"/>
+  <param name="aseba/thymio4/c_net" value="$(find thymio_controller)/nodes/models/Communication"/>
+  <param name="aseba/thymio4/l_net" value="$(find thymio_controller)/nodes/models/LCommunication"/>
+
+
+  <node ns="aseba/thymio5" pkg="thymio_controller" name="controller" type="thymio_controller_node.py" output="screen">
+  </node>
+  <param name="aseba/thymio5/net" value="$(find thymio_controller)/nodes/models/Distributed"/>
+  <param name="aseba/thymio5/c_net" value="$(find thymio_controller)/nodes/models/Communication"/>
+  <param name="aseba/thymio5/l_net" value="$(find thymio_controller)/nodes/models/LCommunication"/>
+
+
+</launch>

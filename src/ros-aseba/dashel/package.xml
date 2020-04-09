@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package>
+  <name>dashel_ros</name>
+  <version>0.1.0</version>
+  <description>
+    Fetches dashel through git submodule and makes it available to ROS
+  </description>
+
+  <maintainer email="stephane@magnenat.net">Stéphane Magnenat</maintainer>
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/dashel</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <name>aseba</name>
+  <version>0.1.0</version>
+  <description>
+    Fetches aseba through git submodule and makes it available to ROS
+  </description>
+
+  <maintainer email="stephane@magnenat.net">Stéphane Magnenat</maintainer>
+  <license>BSD</license>
+  <url type="website">http://ros.org/wiki/aseba</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>dashel_ros</build_depend>
+
+  <run_depend>dashel_ros</run_depend>
+</package>
