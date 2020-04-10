@@ -15,13 +15,11 @@ import random as rand
 
 
 class Simulator:
-    def __init__(self, timesteps: int, n: int, l: float, masvel: float, minrange=0.0, maxrange=99999.0, uniform=False):
+    def __init__(self, timesteps: int, n: int, l: float, masvel: float, uniform=False):
         self.timesteps: int = timesteps
         self.N: int = n
         self.L: float = l
         self.masVel: float = masvel
-        self.minRange: float = minrange
-        self.maxRange: float = maxrange
         self.uniform: bool = uniform
         self.dt = 0.1
 
@@ -35,33 +33,32 @@ class Simulator:
 
         if init is not None:
             n_agents=len(init)
+            actualL = Linit
         else:
             n_agents = self.defineN()
-
-
+            actualL = self.defineL()
         timesteps = self.timesteps
-        L = self.defineL()
-
         agents_list = []
 
         # Create list of agents
-        if self.uniform:
-            init=UniformInit(n_agents,L,0.06).create()
-        else:
-            if init is None:            
-                init=RandomInit(n_agents,L,0.06).create()
+        if init is None:
+            if self.uniform:
+                init=UniformInit(n_agents,actualL,0.06).create()
             else:
-                L = Linit            
+                init=RandomInit(n_agents,actualL,0.06).create()
+
         for i in range(n_agents):                
-            agents_list.append(Agent(init[i], i, self.minRange, self.maxRange))
+            agents_list.append(Agent(init[i], i))
 
         # li ordino in base alla posizione
         agents_list.sort(key=lambda x: x.getxy()[0], reverse=False)
 
+
+
         # initialize agents and simulation state
 
         for i in range(n_agents): 
-            agents_list[i].state, agents_list[i].vels = agents_list[i].observe(agents_list,L,i)
+            agents_list[i].state, agents_list[i].vels = agents_list[i].observe(agents_list,actualL,i)
 
         # Initialize targets
         goal_list = [None]*n_agents
@@ -69,7 +66,7 @@ class Simulator:
 
         if goal_set:
             agent_width = agents_list[0].width
-            free_space = L - (n_agents*agent_width*2)
+            free_space = actualL - (n_agents*agent_width*2)
             # assert free_space > 0
             space_dist = free_space / (n_agents + 1)
             # first agent
@@ -78,9 +75,9 @@ class Simulator:
                 for i in range(1,n_agents-1):
                     goal_list[i]= space_dist + agent_width + (2*agent_width + space_dist)*i            
             if n_agents > 1:
-                goal_list[n_agents-1]=L - (agent_width + space_dist)
+                goal_list[n_agents-1]=actualL - (agent_width + space_dist)
         else:
-            dist = L/(n_agents+1)            
+            dist = actualL/(n_agents+1)
             for i in range(n_agents):
                 goal_list[i]=dist*(i+1)        
 
@@ -102,7 +99,7 @@ class Simulator:
             comms = None
             for t in range (0, timesteps):
                 for i in range( 0, len(agents_list)):
-                    agents_list[i].state,  agents_list[i].vels= agents_list[i].observe(agents_list,L, i)
+                    agents_list[i].state,  agents_list[i].vels= agents_list[i].observe(agents_list,actualL, i)
                     error = agents_list[i].getxy()[0]-goal_list[i]
                     v = controller.step(error, self.dt)
                     v = np.clip(v, -self.masVel, +self.masVel)
@@ -122,7 +119,7 @@ class Simulator:
                     agent.step(target_vels[t,i],self.dt)
 
                     #check collisions
-                    if not agent.check_collisions(agents_list[:i]+agents_list[i+1:],L):
+                    if not agent.check_collisions(agents_list[:i]+agents_list[i+1:],actualL):
                         agent.setx(old_position)
                         target_vels[t,i]=0.0
                     
@@ -131,7 +128,7 @@ class Simulator:
 #################################################################
         else:
             net_controller = control.controller()
-            net_run = RunTask1(L, controller=net_controller, dt=0.1)
+            net_run = RunTask1(actualL, controller=net_controller, dt=0.1)
             trace = net_run(states[0], agents_list, goal_list, self.masVel, state_size, epsilon=0.01, T=timesteps)
             states[:trace.state.shape[0],:,0]=trace.state
             states[:trace.sensing.shape[0],:,3:]=trace.sensing
@@ -143,15 +140,13 @@ class Simulator:
         return states, target_vels, errors, comms
 
 class SimulatorR(Simulator):
-    def __init__(self, timesteps, N, mL, ML, masVel, minRange = 0.0, maxRange = 9999999.0, uniform = False):
+    def __init__(self, timesteps, N, mL, ML, masVel, uniform = False):
         self.timesteps = timesteps
         self.N = N
         self.mL = mL
         self.ML = ML
         self.mas_vel = masVel
         self.dt =0.1
-        self.min_range = minRange
-        self.max_range = maxRange
         self.uniform = uniform
 
     def defineL(self):
@@ -159,30 +154,29 @@ class SimulatorR(Simulator):
         return L
 
 class Simulator2(Simulator):
-    def __init__(self, timesteps, N, L, masVel, minRange = 0.0, maxRange = 9999999.0, uniform = False):
-        super(Simulator2, self).__init__(timesteps, N, L, masVel, minRange, maxRange, uniform)
+    def __init__(self, timesteps, N, L, masVel, uniform = False):
+        super(Simulator2, self).__init__(timesteps, N, L, masVel, uniform)
 
     def run(self, init= None, control=None, parameter = None, Linit=None):
+
         if init is not None:
             n_agents=len(init)
+            actualL = Linit
         else:
             n_agents = self.defineN()
-
+            actualL = self.defineL()
         timesteps = self.timesteps
-        L = self.defineL()
-
         agents_list = []
 
         # Create list of agents
-        if self.uniform:
-            init=UniformInit(n_agents,L,0.06).create()
-        else:
-            if init is None:            
-                init=RandomInit(n_agents,L,0.06).create()
-            else:                
-                L = Linit            
+        if init is None:
+            if self.uniform:
+                init=UniformInit(n_agents,actualL,0.06).create()
+            else:
+                init=RandomInit(n_agents,actualL,0.06).create()
+
         for i in range(n_agents):                
-            agents_list.append(Agent(init[i], i, self.minRange, self.maxRange))
+            agents_list.append(Agent(init[i], i))
 
         # li ordino in base alla posizione
         agents_list.sort(key=lambda x: x.getxy()[0], reverse=False)
@@ -190,7 +184,7 @@ class Simulator2(Simulator):
         # initialize agents and simulation state
 
         for i in range(n_agents): 
-            agents_list[i].state, agents_list[i].vels = agents_list[i].observe(agents_list,L,i)
+            agents_list[i].state, agents_list[i].vels = agents_list[i].observe(agents_list,actualL,i)
 
         # Initialize targets
         goal_list = [None]*n_agents
@@ -214,7 +208,7 @@ class Simulator2(Simulator):
             comms = None
             for t in range (0, timesteps):
                 for i in range( 0, len(agents_list)):
-                    agents_list[i].state,  agents_list[i].vels= agents_list[i].observe(agents_list,L, i)
+                    agents_list[i].state,  agents_list[i].vels= agents_list[i].observe(agents_list,actualL, i)
                     agents_list[i].color = goal_list[i]
                     target_colors[t,i] = goal_list[i]
                 # save state
@@ -227,7 +221,7 @@ class Simulator2(Simulator):
         ### Domanda funiona megli sync - sync.  sequenziale - sync. oppure sync - sequenziale?
         else:
             net_controller = control.controller()            
-            net_run = RunTask2(L, controller=net_controller, dt=0.1)
+            net_run = RunTask2(actualL, controller=net_controller, dt=0.1)
             trace = net_run(states[0], agents_list, goal_list, self.masVel, state_size, epsilon=0.01, T=timesteps)
             states[:trace.state.shape[0],:,0]=trace.state
             states[:trace.sensing.shape[0],:,3:]=trace.sensing
@@ -239,14 +233,12 @@ class Simulator2(Simulator):
         return states, target_colors, errors, comms
 
 class SimulatorN(Simulator2):
-    def __init__(self, timesteps, Ns, L, masVel, minRange = 0.0, maxRange = 9999999.0, uniform = False):
+    def __init__(self, timesteps, Ns, L, masVel, uniform = False):
         self.timesteps = timesteps
         self.Ns = Ns
         self.L = L
-        self.mas_vel = masVel
+        self.masVel = masVel
         self.dt =0.1
-        self.min_range = minRange
-        self.max_range = maxRange
         self.uniform = uniform
 
     def defineN(self):

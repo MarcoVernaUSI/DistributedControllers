@@ -12,7 +12,7 @@ class RunTask2 (Run):
             e.append(self.Cross_Entropy(control[i], goalList[i]))
         return np.mean(np.array(e))
 
-    def Cross_Entropy(y_hat, y):
+    def Cross_Entropy(self, y_hat, y):
         if y == 1:
             return -np.log(y_hat)
         else:

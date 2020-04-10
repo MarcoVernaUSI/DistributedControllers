@@ -4,10 +4,14 @@
 ####################
 
 import sys
-
 sys.path.append("Simulator")
 sys.path.append("Simulator/Initializations")
-from simulator1 import SimulatorN, create_init
+
+
+from RandomInit import RandomInit
+
+
+from Simulator import SimulatorN
 import numpy as np
 import random as rand
 from plotter import plot_simulation_task2 , error_plot, ComGraph, timeGraphL, timeGraphL2, ComGraphL
@@ -98,7 +102,7 @@ if __name__ == '__main__':
         L_tmp= sim.define_L()
 
         N_act = rand.choice(Ns)
-        init = create_init(N_act,L_tmp, 0.06)
+        init = RandomInit(N_act,L_tmp, 0.06).create()
 
         states, colors, _, _ = sim.run(init=init, Linit=L_tmp)
         c_net.N = N_act
@@ -137,9 +141,9 @@ if __name__ == '__main__':
     inits=[]
     lengths=[]
     for i in range(n_test):
-        L_tmp= sim.define_L()
+        L_tmp= sim.defineL()
         N_act = rand.choice(Ns)
-        init = create_init(N_act,L_tmp, 0.06)
+        init = RandomInit(N_act,L_tmp, 0.06).create()
         inits.append(init)
         lengths.append(L_tmp)
 
