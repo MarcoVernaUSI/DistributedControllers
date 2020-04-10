@@ -1,25 +1,23 @@
 from typing import List
-
+from abc import abstractmethod, ABCMeta
 import numpy as np
 from network import Controller
 from dataset import Trace
 
 
-class Run:
+class Run(metaclass=ABCMeta):
 
     def __init__(self, L,controller: Controller, dt: float = 0.1):
         self.controller = controller
         self.dt = dt
         self.L = L
 
-    def __call__(self, state_c, agents_list, goal_list,  mas_vel, state_size,epsilon: float = 0.01, T: float = np.inf
+    def __call__(self, state_c, agents_list, goalList, mas_vel, state_size, epsilon: float = 0.01, T: float = np.inf
                  ) -> Trace:
         t = 0.0
-        dt = 0.1
         steps: List[Trace] = []
-        L = self.L
-        e = 10
-#       while (e > epsilon and t < T) or t == 0:
+
+
         while (t < T) or t == 0:
             state = state_c[:,0].tolist()
             sensing = state_c[:,3:].tolist()
@@ -28,28 +26,22 @@ class Run:
             if communication:
                 communication = communication[0]
 
-            e = np.mean(abs(np.array(state)-np.array(goal_list)))
+            e = self.runStep(control, goalList, agents_list, state, mas_vel)
 
-
-            # update
-            for i,v in enumerate(control):
-                v = np.clip(v, -mas_vel, +mas_vel)
-                agents_list[i].step(v,dt)
-                control[i]=v
-
-                #check collisions
-                if not agents_list[i].check_collisions(agents_list[:i]+agents_list[i+1:],L):
-                    agents_list[i].setx(state[i])
-                    agents_list[i].velocity= 0.0
-                    control[i]=0.0
 
             for i in range( 0, len(agents_list)):
-                agents_list[i].state, agents_list[i].vels= agents_list[i].observe(agents_list,L, i)
+                agents_list[i].state, agents_list[i].vels= agents_list[i].observe(agents_list,self.L, i)
 
             steps.append(Trace(t, state, communication, sensing, control, e))
             state_c = save_state(agents_list,state_size)
             t += 1
         return Trace(*[np.array(x) for x in zip(*steps)])
+
+
+    @abstractmethod
+    def runStep(self, control, goalList, agents_list, state, mas_vel)  -> float:
+       pass
+
 
 
 def save_state(agents_list, state_size):

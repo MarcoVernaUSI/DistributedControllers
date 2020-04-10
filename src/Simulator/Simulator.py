@@ -6,57 +6,12 @@ from typing import List
 from RandomInit import RandomInit
 from UniformInit import UniformInit
 from holonomic_agent import Agent
-from simulationRun import Run, save_state
+from RunTask1 import RunTask1
+from RunTask2 import RunTask2
+from SimulatorRun import save_state
 from PID import PID
 import numpy as np
 import random as rand
-from network import Controller
-from dataset import Trace
-
-
-def Cross_Entropy(y_hat, y):
-    if y == 1:
-      return -np.log(y_hat)
-    else:
-      return -np.log(1 - y_hat)
-
-
-class RunL:
-
-    def __init__(self, L,controller: Controller, dt: float = 0.1):
-        self.controller = controller
-        self.dt = dt
-        self.L = L
-
-    def __call__(self, state_c, agents_list, goal_list,  mas_vel, state_size,epsilon: float = 0.01, T: float = np.inf
-                 ) -> Trace:
-        t = 0.0
-        dt = 0.1
-        steps: List[Trace] = []
-        L = self.L
-        e = 10
-#       while (e > epsilon and t < T) or t == 0:
-        while (t < T) or t == 0:
-            state = state_c[:,0].tolist()      
-            sensing = state_c[:,3:].tolist() 
-  
-            control, *communication = self.controller(state, sensing)
-            
-            if communication:
-                communication = communication[0]
-            
-            e = []
-            for i in range(len(control)):
-                e.append(Cross_Entropy(control[i], goal_list[i]))
-
-            e = np.mean(np.array(e))                    
-            for i in range( 0, len(agents_list)):
-                agents_list[i].state, agents_list[i].vels= agents_list[i].observe(agents_list,L, i)
-
-            steps.append(Trace(t, state, communication, sensing, control, e))  
-            state_c = save_state(agents_list,state_size)
-            t += 1
-        return Trace(*[np.array(x) for x in zip(*steps)]) 
 
 
 class Simulator:
@@ -75,11 +30,6 @@ class Simulator:
 
     def defineN(self):
         return self.N
-
-
-   # def run(self, init=None, control=None, parameter = None, goal_set = True, Linit=None):
-
-
 
     def run(self, init=None, control=None, parameter = None, goal_set = True, Linit=None):
         n_agents = self.defineN()
@@ -176,7 +126,7 @@ class Simulator:
 #################################################################
         else:
             net_controller = control.controller()
-            net_run = Run(L, controller=net_controller, dt=0.1)
+            net_run = RunTask1(L, controller=net_controller, dt=0.1)
             trace = net_run(states[0], agents_list, goal_list, self.masVel, state_size, epsilon=0.01, T=timesteps)
             states[:trace.state.shape[0],:,0]=trace.state
             states[:trace.sensing.shape[0],:,3:]=trace.sensing
@@ -274,7 +224,7 @@ class Simulator2(Simulator):
         ### Domanda funiona megli sync - sync.  sequenziale - sync. oppure sync - sequenziale?
         else:
             net_controller = control.controller()            
-            net_run = RunL(L, controller=net_controller, dt=0.1)
+            net_run = RunTask2(L, controller=net_controller, dt=0.1)
             trace = net_run(states[0], agents_list, goal_list, self.masVel, state_size, epsilon=0.01, T=timesteps)
             states[:trace.state.shape[0],:,0]=trace.state
             states[:trace.sensing.shape[0],:,3:]=trace.sensing
