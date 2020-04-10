@@ -1,6 +1,7 @@
 ####################
 # Simulator for task 1
 ####################
+from typing import List
 
 from holonomic_agent import Agent, mktr, mkrot, atr
 import numpy as np
@@ -328,7 +329,7 @@ class SimulatorR(Simulator):
         self.uniform = uniform
 
     def define_L(self):
-        L = round(random.uniform(self.mL,self.ML), 2)
+        L = round(rand.random.uniform(self.mL, self.ML), 2)
         return L
 
 def save_state(agents_list, state_size):
