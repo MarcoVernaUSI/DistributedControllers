@@ -40,7 +40,7 @@ if __name__ == '__main__':
     train = True
     n_simulation = 100#5000
     timesteps = 10 #each timestp is 1/10 of second
-    n_plots = 1 # number of plots visulaized
+    n_plots = 0 # number of plots visulaized
     n_test = 10 # number of example in the test set
     comm_size= 1
 

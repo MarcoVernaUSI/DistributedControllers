@@ -4,6 +4,9 @@
 ####################
 
 import sys
+
+sys.path.append("Simulator")
+sys.path.append("Simulator/Initializations")
 from simulator1 import SimulatorN, create_init
 import numpy as np
 import random as rand
@@ -39,10 +42,10 @@ import torch
 if __name__ == '__main__':
     # Parameters
     train = True
-    n_simulation = 3000#5000
+    n_simulation = 30#5000
     timesteps = 6 #each timestep is 1/10 of second
-    n_plots = 3 # number of plots visulaized
-    n_test = 100 # number of example in the test set
+    n_plots = 0 # number of plots visulaized
+    n_test = 10 # number of example in the test set
     comm_size= 1
     uniform_init = True
 
@@ -72,7 +75,7 @@ if __name__ == '__main__':
     #    c_net = ComNetLnoSensing(N=N, sync=Sync.sync)  # changed to sync
       
         c_training_loss, c_testing_loss = [], []
-        train_net(epochs=100, net=c_net, train_dataset=c_training_set, test_dataset=c_test_set, batch_size=10, learning_rate=0.0001,
+        train_net(epochs=1, net=c_net, train_dataset=c_training_set, test_dataset=c_test_set, batch_size=10, learning_rate=0.0001,
             training_loss=c_training_loss, testing_loss=c_testing_loss, criterion_="bin", padded=True);
 
         if save_cmd:

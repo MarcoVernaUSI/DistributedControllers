@@ -4,6 +4,9 @@
 ####################
 
 import sys
+sys.path.append("Simulator")
+sys.path.append("Simulator/Initializations")
+
 from simulator1 import Simulator2, create_init
 import numpy as np
 from plotter import ComGraphL, error_plot, ComGraph, timeGraphL2
@@ -56,10 +59,10 @@ def save_log(N, states_dist, control_dist,states_comm, control_comm, c_com):
 if __name__ == '__main__':
     # Parameters
     train = True
-    n_simulation = 1000 #5000
+    n_simulation = 100 #5000
     timesteps =10 #each timestep is 1/10 of second
-    n_plots = 10 # number of plots visualized
-    n_test = 100 # number of example in the test set
+    n_plots = 0 # number of plots visualized
+    n_test = 10 # number of example in the test set
     comm_size= 1
     uniform_init = True
 
@@ -86,7 +89,7 @@ if __name__ == '__main__':
     if command_cnt:
         net = CentralizedNetL(N)
         training_loss, testing_loss = [], []
-        train_net(epochs=100, net=net, train_dataset=training_set, test_dataset=test_set, batch_size=100, learning_rate=0.0005,
+        train_net(epochs=1, net=net, train_dataset=training_set, test_dataset=test_set, batch_size=100, learning_rate=0.0005,
               training_loss=training_loss, testing_loss=testing_loss, criterion_= "bin");
         if save_cmd:
             torch.save(net, 'models/Centralized')
@@ -105,7 +108,7 @@ if __name__ == '__main__':
         d_net = DistributedNetL(2)
         d_training_loss, d_testing_loss = [], []
         # learning rate 0.001 oscilla tra 0.03 e 0.029
-        train_net(epochs=100, net=d_net, train_dataset=d_training_set, test_dataset=d_test_set, batch_size=100, learning_rate=0.001,
+        train_net(epochs=1, net=d_net, train_dataset=d_training_set, test_dataset=d_test_set, batch_size=100, learning_rate=0.001,
               training_loss=d_training_loss, testing_loss=d_testing_loss, criterion_="bin");
         if save_cmd:
             torch.save(d_net, 'models/Distributed')
@@ -127,7 +130,7 @@ if __name__ == '__main__':
     #    c_net = ComNetLnoSensing(N=N, sync=Sync.sync)  # changed to sync
       
         c_training_loss, c_testing_loss = [], []
-        train_net(epochs=100, net=c_net, train_dataset=c_training_set, test_dataset=c_test_set, batch_size=10, learning_rate=0.0001,
+        train_net(epochs=1, net=c_net, train_dataset=c_training_set, test_dataset=c_test_set, batch_size=10, learning_rate=0.0001,
             training_loss=c_training_loss, testing_loss=c_testing_loss, criterion_="bin");
 
         if save_cmd:

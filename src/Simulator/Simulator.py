@@ -32,9 +32,14 @@ class Simulator:
         return self.N
 
     def run(self, init=None, control=None, parameter = None, goal_set = True, Linit=None):
-        n_agents = self.defineN()
+
+        if init is not None:
+            n_agents=len(init)
+        else:
+            n_agents = self.defineN()
+
+
         timesteps = self.timesteps
-        dt= self.dt
         L = self.defineL()
 
         agents_list = []
@@ -99,7 +104,7 @@ class Simulator:
                 for i in range( 0, len(agents_list)):
                     agents_list[i].state,  agents_list[i].vels= agents_list[i].observe(agents_list,L, i)
                     error = agents_list[i].getxy()[0]-goal_list[i]
-                    v = controller.step(error, dt)
+                    v = controller.step(error, self.dt)
                     v = np.clip(v, -self.masVel, +self.masVel)
                     target_vels[t,i] = v
                 # save state
@@ -114,7 +119,7 @@ class Simulator:
                 # update agents
                 for i,agent in enumerate(agents_list):
                     old_position = agent.getxy()[0]
-                    agent.step(target_vels[t,i],dt)
+                    agent.step(target_vels[t,i],self.dt)
 
                     #check collisions
                     if not agent.check_collisions(agents_list[:i]+agents_list[i+1:],L):
@@ -158,14 +163,12 @@ class Simulator2(Simulator):
         super(Simulator2, self).__init__(timesteps, N, L, masVel, minRange, maxRange, uniform)
 
     def run(self, init= None, control=None, parameter = None, Linit=None):
-        n_agents = self.defineN()
-
         if init is not None:
-            if len(init)!=n_agents:
-                n_agents=len(init)
+            n_agents=len(init)
+        else:
+            n_agents = self.defineN()
 
         timesteps = self.timesteps
-        dt= self.dt
         L = self.defineL()
 
         agents_list = []
