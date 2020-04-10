@@ -3,7 +3,7 @@
 ####################
 from typing import List
 
-from holonomic_agent import Agent, mktr, mkrot, atr
+from holonomic_agent import Agent, mktr
 import numpy as np
 import random as rand
 from network import Controller

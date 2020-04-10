@@ -6,9 +6,7 @@
 import sys
 from simulator1 import Simulator, create_init
 import numpy as np
-from holonomic_agent import Agent, mktr, mkrot, atr
-import random as rand
-from plotter import plot_simulation2, timeGraph, plot_simulationN, timeGraphN, error_plot, ComGraph
+from plotter import plot_simulation2, timeGraph, error_plot, ComGraph
 from dataset import create_dataset
 from network import CentralizedNet, train_net, DistributedNet
 from com_network import ComNet, Sync

@@ -4,11 +4,13 @@
 ####################
 
 import sys
-from simulator1 import Simulator, SimulatorR,create_init
+sys.path.append("Simulator")
+sys.path.append("Simulator/Initializations")
+
+from RandomInit import RandomInit
+from Simulator import Simulator, SimulatorR
 import numpy as np
-from holonomic_agent import Agent, mktr, mkrot, atr
-import random as rand
-from plotter import plot_simulation2, timeGraph, plot_simulationN, timeGraphN, error_plot, ComGraph
+from plotter import plot_simulation2, timeGraph, error_plot, ComGraph
 from dataset import create_dataset
 from network import CentralizedNet, train_net, DistributedNet
 from com_network import ComNet, Sync, Com2Net
@@ -36,10 +38,10 @@ if __name__ == '__main__':
     # Parameters
     variable_range = False
     train = True
-    n_simulation = 1000#5000
-    timesteps = 100 #each timestp is 1/10 of second
+    n_simulation = 100#5000
+    timesteps = 10 #each timestp is 1/10 of second
     n_plots = 1 # number of plots visulaized
-    n_test = 100 # number of example in the test set
+    n_test = 10 # number of example in the test set
     comm_size= 1
 
     #### Simulation parameters
@@ -76,8 +78,8 @@ if __name__ == '__main__':
     # lr 0.001 e 500 epochs e batch size 100 per variable range
     if command_cnt:
         net = CentralizedNet(N)
-        training_loss, testing_loss = [], []
-        train_net(epochs=300, net=net, train_dataset=training_set, test_dataset=test_set, batch_size=10, learning_rate=0.005, # 0.0005,
+        training_loss, testing_loss = [], [] #300 epocs
+        train_net(epochs=2, net=net, train_dataset=training_set, test_dataset=test_set, batch_size=10, learning_rate=0.005, # 0.0005,
               training_loss=training_loss, testing_loss=testing_loss);
         if save_cmd:
             torch.save(net, 'models/Centralized')
@@ -95,8 +97,8 @@ if __name__ == '__main__':
     if command_dis:
         d_net = DistributedNet(2)
         d_training_loss, d_testing_loss = [], []
-        # learning rate 0.001 oscilla tra 0.03 e 0.029
-        train_net(epochs=200, net=d_net, train_dataset=d_training_set, test_dataset=d_test_set, batch_size=100, learning_rate=0.001,
+        # learning rate 0.001 oscilla tra 0.03 e 0.029, #200 epochs
+        train_net(epochs=2, net=d_net, train_dataset=d_training_set, test_dataset=d_test_set, batch_size=100, learning_rate=0.001,
               training_loss=d_training_loss, testing_loss=d_testing_loss);
         if save_cmd:
             torch.save(d_net, 'models/Distributed')
@@ -117,8 +119,8 @@ if __name__ == '__main__':
         else:
             c_net = ComNet(N=N, sync=Sync.sequential)  # changed to sync
     #    c_net = ComNet(N=N, sync=Sync.sync)  # changed to sync
-        c_training_loss, c_testing_loss = [], []
-        train_net(epochs=200, net=c_net, train_dataset=c_training_set, test_dataset=c_test_set, batch_size=10, learning_rate=0.0001,
+        c_training_loss, c_testing_loss = [], [] # epocs 200
+        train_net(epochs=2, net=c_net, train_dataset=c_training_set, test_dataset=c_test_set, batch_size=10, learning_rate=0.0001,
             training_loss=c_training_loss, testing_loss=c_testing_loss);
 
         if save_cmd:
@@ -132,9 +134,9 @@ if __name__ == '__main__':
     # Make a confront of the simulations
     for i in range(n_plots):
 
-        L_tmp= sim.define_L()
+        L_tmp= sim.defineL()
 
-        init = create_init(N,L_tmp, 0.06)
+        init = RandomInit(N,L_tmp, 0.06).create()
 
         states, _, _, _ = sim.run(init=init, Linit=L_tmp)
         statesC, _, _, _ = sim.run(init=init, control = net, Linit=L_tmp)
@@ -159,8 +161,8 @@ if __name__ == '__main__':
     inits=[]
     lengths=[]
     for i in range(n_test):
-        L_tmp= sim.define_L()
-        init = create_init(N,L_tmp, 0.06)
+        L_tmp= sim.defineL()
+        init =  RandomInit(N,L_tmp, 0.06).create()
         inits.append(init)
         lengths.append(L_tmp)
 
@@ -182,10 +184,6 @@ if __name__ == '__main__':
         error_cent[idx] = error_cent[idx] + e_cent
         error_dist[idx] = error_dist[idx] + e_dist
         error_comm[idx] = error_comm[idx] + e_comm
-
-        if error_cent[idx][timesteps-1]>=1:
-            plot_simulation2(st,sc,L_tmp, 'error cent')
-            timeGraph(st,sc,v, 'error cent')
 
         if n_test==1:
             save_log(N,sd,d_control,scom,c_control,c_com)

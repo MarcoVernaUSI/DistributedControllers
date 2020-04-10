@@ -5,7 +5,7 @@
 ## il clippin gdella velocità andrebbe fatto dopo aer salvato la velocità target e dopo aver salvato lo stato nel learning
 
 
-from holonomic_agent import Agent, mktr, mkrot, atr
+from holonomic_agent import Agent, mktr
 import numpy as np
 import random as rand
 from network import Controller

@@ -5,15 +5,14 @@ from typing import List
 
 from RandomInit import RandomInit
 from UniformInit import UniformInit
-from holonomic_agent import Agent, mktr, mkrot, atr
+from holonomic_agent import Agent
 from simulationRun import Run, save_state
-from SimulationInit import SimulationInit
 from PID import PID
 import numpy as np
 import random as rand
 from network import Controller
 from dataset import Trace
-import sys
+
 
 def Cross_Entropy(y_hat, y):
     if y == 1:
@@ -87,7 +86,7 @@ class Simulator:
         timesteps = self.timesteps
         dt= self.dt
         L = self.defineL()
-     
+
         agents_list = []
 
         # Create list of agents

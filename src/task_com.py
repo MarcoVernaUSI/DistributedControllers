@@ -8,12 +8,12 @@
 import sys
 from simulator1 import Simulator
 import numpy as np
-from holonomic_agent import Agent, mktr, mkrot, atr
+from holonomic_agent import Agent, mktr
 import random as rand
-from plotter import plot_simulation2, timeGraph, plot_simulationN, timeGraphN, error_plot, ComGraph
+from plotter import plot_simulation2, timeGraph, error_plot
 from dataset import create_dataset
-from network import CentralizedNet, train_net, DistributedNet
-from com_network import ComNet, Sync, Com2Net
+from network import train_net, DistributedNet
+from com_network import Sync, Com2Net
 import torch
 
 def create_init(N,L):
