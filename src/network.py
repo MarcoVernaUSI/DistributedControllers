@@ -1,12 +1,10 @@
-from typing import List, Tuple, Sequence, Optional
+from typing import List, Tuple,  Optional
 
 import torch
 from torch.utils import data
 import torch.nn.functional as F
 from tqdm import tqdm
-from dataset import Trace
 import numpy as np
-import numpy.ma as ma
 
 
 from typing import Sequence, TypeVar, Callable

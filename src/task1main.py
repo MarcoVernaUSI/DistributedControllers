@@ -168,9 +168,6 @@ if __name__ == '__main__':
         error_dist[idx] = error_dist[idx] + e_dist
         error_comm[idx] = error_comm[idx] + e_comm
 
-        if n_test==1:
-            save_log(N,sd,d_control,scom,c_control,c_com)
-
     max_optimal=np.quantile(error_optimal,0.95 ,axis=0)
     min_optimal=np.quantile(error_optimal,0.05 ,axis=0)
     error_optimal=np.mean(error_optimal, axis=0)

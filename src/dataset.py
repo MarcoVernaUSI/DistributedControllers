@@ -1,4 +1,4 @@
-from typing import Sequence, TypeVar, Callable, List, NamedTuple, Optional, Tuple
+from typing import Sequence, NamedTuple, Optional, Tuple
 import torch
 from torch.utils.data import TensorDataset, Dataset
 import numpy as np

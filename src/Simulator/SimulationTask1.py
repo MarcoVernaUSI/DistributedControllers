@@ -1,9 +1,7 @@
 import numpy as np
 
 from Simulation import Simulation
-from SimulatorRun import save_state
 from PID import PID
-from RunTask1 import RunTask1
 
 
 class SimulationTask1(Simulation):
@@ -37,7 +35,7 @@ class SimulationTask1(Simulation):
                 self.targets[t, i] = v
             # save state
 
-            self.states[t] = save_state(self.agentsList, self.stateSize)
+            self.states[t] = self.save_state(self.agentsList, self.stateSize)
             state_error = self.states[t, :, 0]
             self.errors[t] = np.mean(abs(state_error - np.array(self.goalList)))
 
@@ -53,5 +51,18 @@ class SimulationTask1(Simulation):
 
         return self.states, self.targets, self.errors, comms
 
-    def controllerRun(self, controller):
-        return RunTask1(self.actualL, controller=controller, dt=0.1)
+    def runStep(self, control, goalList, agents_list, state, mas_vel)  -> float:
+        e = np.mean(abs(np.array(state) - np.array(goalList)))
+        # update
+
+        for i,v in enumerate(control):
+            v = np.clip(v, -mas_vel, +mas_vel)
+            agents_list[i].step(v,self.dt)
+            control[i]=v
+
+            #check collisions
+            if not agents_list[i].check_collisions(agents_list[:i]+agents_list[i+1:],self.actualL):
+                agents_list[i].setx(state[i])
+                agents_list[i].velocity= 0.0
+                control[i]=0.0
+        return e
