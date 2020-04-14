@@ -9,11 +9,6 @@ from SimulationTask2 import SimulationTask2
 from SimulationInit import SimulationInit
 from UniformInit import UniformInit
 from holonomic_agent import Agent
-from RunTask1 import RunTask1
-from RunTask2 import RunTask2
-from SimulatorRun import save_state
-from PID import PID
-import numpy as np
 import random as rand
 
 
@@ -67,7 +62,7 @@ class Simulator:
             states, targets, errors, comms = sim.runWithExpert()
         else:
             net_controller = control.controller()
-            states, targets, errors, comms = sim.runWithNet(net_controller, self.masVel)
+            states, targets, errors, comms = sim.runWithNet(net_controller)
 
 #################################################################
         return states, targets, errors, comms
@@ -125,7 +120,7 @@ class Simulator2(Simulator):
             states, targets, errors, comms = sim.runWithExpert()
         else:
             net_controller = control.controller()
-            states, targets, errors, comms = sim.runWithNet(net_controller, self.masVel)
+            states, targets, errors, comms = sim.runWithNet(net_controller)
 
 
 #################################################################
