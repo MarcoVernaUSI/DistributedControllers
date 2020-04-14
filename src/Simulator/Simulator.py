@@ -12,7 +12,6 @@ from holonomic_agent import Agent
 import random as rand
 
 
-
 class Simulator:
     def __init__(self, timesteps: int, n: int, l: float, masvel: float, initMode: SimulationInit):
         self.timesteps: int = timesteps
@@ -33,28 +32,27 @@ class Simulator:
 
     def run(self, init=None, control=None, parameter=None, Linit=None):
         if init is not None:
-            n_agents = len(init)
+            nAgents = len(init)
             actualL = Linit
         else:
-            n_agents = self.defineN()
+            nAgents = self.defineN()
             actualL = self.defineL()
-        timesteps = self.timesteps
 
         # Create list of agents
         if init is None:
-            init = self.initMode.create(n_agents, actualL)
+            init = self.initMode.create(nAgents, actualL)
 
         agents_list = []
-        for i in range(n_agents):
+        for i in range(nAgents):
             agents_list.append(Agent(init[i], i))
         # li ordino in base alla posizione
         agents_list.sort(key=lambda x: x.getxy()[0], reverse=False)
 
         # initialize agents and simulation state
-        for i in range(n_agents):
+        for i in range(nAgents):
             agents_list[i].state, agents_list[i].vels = agents_list[i].observe(agents_list, actualL, i)
 
-        sim = self.setTask(n_agents, actualL, agents_list, timesteps, parameter)
+        sim = self.setTask(nAgents, actualL, agents_list, self.timesteps, parameter)
         sim.saveInitialState()
 
         if control is None:

@@ -8,7 +8,7 @@ class PID:
 
     def step(self, e, dt):
         """ dt should be the time interval from the last method call """
-        if(self.last_e is not None):
+        if self.last_e is not None:
             derivative = (e - self.last_e) / dt
         else:
             derivative = 0

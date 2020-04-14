@@ -6,6 +6,7 @@ from network import Controller
 
 SimulationRun = Callable[[Controller], Trace]
 
+
 class Simulation(metaclass=ABCMeta):
     def __init__(self, nAgents, actualL, dt, masVel, agentsList, timesteps, parameter):
         self.nAgents: int = nAgents
@@ -16,6 +17,7 @@ class Simulation(metaclass=ABCMeta):
         self.timesteps = timesteps
         self.states, self.targets, self.errors, self.stateSize = self.initializeParameters(parameter)
         self.goalList = self.initializeTargets()
+        self.state_c = None
 
     @abstractmethod
     def initializeTargets(self):
@@ -52,50 +54,45 @@ class Simulation(metaclass=ABCMeta):
         return self.states, self.targets, self.errors, comms
 
     def run(self) -> SimulationRun:
-        def f(controller: Controller) -> Trace:
-            state_c = self.states[0]
-            agents_list =  self.agentsList
-            goalList = self.goalList
-            mas_vel = self.masVel
-            state_size = self.stateSize
-            T = self.timesteps
+        self.state_c = self.states[0]
 
+        def f(controller: Controller) -> Trace:
             t = 0.0
             steps: List[Trace] = []
 
-            while (t < T) or t == 0:
-                state = state_c[:,0].tolist()
-                sensing = state_c[:,3:].tolist()
+            while (t < self.timesteps) or t == 0:
+                state = self.state_c[:, 0].tolist()
+                sensing = self.state_c[:, 3:].tolist()
 
                 control, *communication = controller(state, sensing)
                 if communication:
                     communication = communication[0]
 
-                e = self.runStep(control, goalList, agents_list, state, mas_vel)
+                e = self.runStep(control, self.goalList, self.agentsList, state, self.masVel)
 
-                for i in range( 0, len(agents_list)):
-                    agents_list[i].state, agents_list[i].vels= agents_list[i].observe(agents_list,self.actualL, i)
+                for i in range(0, len(self.agentsList)):
+                    self.agentsList[i].state, self.agentsList[i].vels = self.agentsList[i].observe(self.agentsList,
+                                                                                                   self.actualL, i)
 
                 steps.append(Trace(t, state, communication, sensing, control, e))
-                state_c = self.save_state(agents_list,state_size)
+                self.state_c = self.save_state(self.agentsList, self.stateSize)
                 t += 1
             return Trace(*[np.array(x) for x in zip(*steps)])
+
         return f
 
     @abstractmethod
-    def runStep(self, control, goalList, agents_list, state, mas_vel)  -> float:
-       pass
-
+    def runStep(self, control, goalList, agents_list, state, mas_vel) -> float:
+        pass
 
     def save_state(self, agents_list, state_size):
 
-        n_agents=len(agents_list)
+        n_agents = len(agents_list)
         state = np.zeros((n_agents, state_size))
         for i in range(n_agents):
-            state[i,0]= agents_list[i].getxy()[0]
-            state[i,1]= agents_list[i].getxy()[1]
-            state[i,2]= agents_list[i].gettheta()
-            for j in range(state_size-3):
-                state[i,3+j]= np.concatenate((agents_list[i].state,agents_list[i].vels))[j]
+            state[i, 0] = agents_list[i].getxy()[0]
+            state[i, 1] = agents_list[i].getxy()[1]
+            state[i, 2] = agents_list[i].gettheta()
+            for j in range(state_size - 3):
+                state[i, 3 + j] = np.concatenate((agents_list[i].state, agents_list[i].vels))[j]
         return state
-
