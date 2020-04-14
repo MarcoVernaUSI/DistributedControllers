@@ -11,6 +11,7 @@ sys.path.append("Simulator/Initializations")
 
 from RandomInit import RandomInit
 
+from UniformInit import UniformInit
 
 from Simulator import Simulator2
 import numpy as np
@@ -43,23 +44,6 @@ import torch
 #implementazione
 #risultati.
 
-def save_log(N, states_dist, control_dist,states_comm, control_comm, c_com):
-
-    comm_data = np.append(np.zeros((c_com.shape[0],1)), c_com, axis=1)
-    comm_data = np.append(comm_data, np.zeros((c_com.shape[0],1)), axis=1)
-    
-    for i in range(N):
-
-        sensing_dist= states_dist[:,i,3:5]
-        sensing_comm= states_comm[:,i,3:5]        
-
-        np.savetxt("logs/distr/thymio_"+str(i+1)+"_sensing.csv", sensing_dist, delimiter=",", fmt='%1.6f')
-        np.savetxt("logs/distr/thymio_"+str(i+1)+"_control.csv", control_dist[:,i], delimiter=",",fmt='%1.6f')
-        np.savetxt("logs/comm/thymio_"+str(i+1)+"_sensing.csv", sensing_comm, delimiter=",",fmt='%1.6f')
-        np.savetxt("logs/comm/thymio_"+str(i+1)+"_control.csv", control_comm[:,i], delimiter=",",fmt='%1.6f')
-        np.savetxt("logs/comm/thymio_"+str(i+1)+"_comm_tx.csv", c_com[:,i], delimiter=",",fmt='%1.6f')
-        np.savetxt("logs/comm/thymio_"+str(i+1)+"_comm_rx.csv", np.stack([comm_data[:,i],comm_data[:,i+2]], axis=1), delimiter=",",fmt='%1.6f')
-
 
 if __name__ == '__main__':
     # Parameters
@@ -84,7 +68,7 @@ if __name__ == '__main__':
     
     # Run Simulations
 
-    sim = Simulator2(timesteps,N,L,mas_vel, uniform = uniform_init)  # if define a min_range and a max_range ti resemble the real situation.
+    sim = Simulator2(timesteps,N,L,mas_vel, initMode=UniformInit())  # if define a min_range and a max_range ti resemble the real situation.
                                                     # For the optimal simulator we assume the sensing is illimited 
     training_set = create_dataset(sim, n_simulation,"st")
     test_set = create_dataset(sim, n_simulation//5,"st")
@@ -157,9 +141,9 @@ if __name__ == '__main__':
 
     for i in range(n_plots):
 
-        L_tmp= sim.define_L()
+        L_tmp= sim.defineL()
 
-        init = RandomInit(N,L_tmp, 0.06).create()
+        init = RandomInit().create(N,L_tmp)
 
         states, colors, _, _ = sim.run(init=init, Linit=L_tmp)
         statesC, colorsC, _, _ = sim.run(init=init, control = net, Linit=L_tmp)   
@@ -203,7 +187,7 @@ if __name__ == '__main__':
     lengths=[]
     for i in range(n_test):
         L_tmp= sim.defineL()
-        init = RandomInit(N,L_tmp, 0.06).create()
+        init = RandomInit().create(N,L_tmp)
         inits.append(init)
         lengths.append(L_tmp)
 

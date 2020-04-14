@@ -6,13 +6,13 @@ from SimulationInit import SimulationInit
 
 class RandomInit(SimulationInit):
 
-    def calcolatePositions(self):
+    def calcolatePositions(self, N: int, L: float, agentWidth: float, bufferDistance: float):
 
         # create initial positions
-        offset = int(round((self.agentWidth + self.bufferDistance) * 100))
-        range_ = int(round(self.L * 100)) - 2 * offset  # lo trasformo in centimetri
+        offset = int(round((agentWidth + bufferDistance) * 100))
+        range_ = int(round(L * 100)) - 2 * offset  # lo trasformo in centimetri
 
-        initial_positions = np.array(self.sample_with_minimum_distance(range_, self.N, offset * 2))
+        initial_positions = np.array(self.sample_with_minimum_distance(range_, N, offset * 2))
         initial_positions = initial_positions + offset  # sommo a tutti l'offset
         # divido per cento per tornare a metri
         return initial_positions / 100

@@ -4,13 +4,13 @@
 ####################
 
 import sys
+
+
 sys.path.append("Simulator")
 sys.path.append("Simulator/Initializations")
 
-
+from UniformInit import UniformInit
 from RandomInit import RandomInit
-
-
 from Simulator import SimulatorN
 import numpy as np
 import random as rand
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     
     # Run Simulations
 
-    sim = SimulatorN(timesteps,Ns,L,mas_vel, uniform = uniform_init)  # if define a min_range and a max_range ti resemble the real situation.
+    sim = SimulatorN(timesteps,Ns,L,mas_vel, initMode = UniformInit())  # if define a min_range and a max_range ti resemble the real situation.
                                                     # For the optimal simulator we assume the sensing is illimited 
     # Training the communication net
     # batch size 10, epochs 100, lr 0.0001
@@ -99,10 +99,10 @@ if __name__ == '__main__':
 
     for i in range(n_plots):
 
-        L_tmp= sim.define_L()
+        L_tmp= sim.defineL()
 
         N_act = rand.choice(Ns)
-        init = RandomInit(N_act,L_tmp, 0.06).create()
+        init = RandomInit().create(N_act,L_tmp)
 
         states, colors, _, _ = sim.run(init=init, Linit=L_tmp)
         c_net.N = N_act
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     for i in range(n_test):
         L_tmp= sim.defineL()
         N_act = rand.choice(Ns)
-        init = RandomInit(N_act,L_tmp, 0.06).create()
+        init = RandomInit().create(N_act,L_tmp)
         inits.append(init)
         lengths.append(L_tmp)
 
