@@ -2,5 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/ros-aseba" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/ros-aseba/aseba/upstream_src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/ros-aseba/dashel/upstream_src" vcs="Git" />
   </component>
 </project>
